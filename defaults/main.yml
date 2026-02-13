@@ -1,15 +1,15 @@
 ---
 
-devture_systemd_docker_base_systemd_path: "/etc/systemd/system"
+sysd_docker_service_path: "/etc/systemd/system"
 
 # Specifies the path to use for the `HOME` environment variable for systemd unit files.
 # Docker 20.10 complains with `WARNING: Error loading config file: .dockercfg: $HOME is not defined`
 # if `$HOME` is not defined, so we define something to make it happy.
-devture_systemd_docker_base_systemd_unit_home_path: /root
+sysd_docker_unit_home_path: /usr/local/share
 
-devture_systemd_docker_base_host_command_docker: "/usr/bin/env docker"
-devture_systemd_docker_base_host_command_sh: "/usr/bin/env sh"
-devture_systemd_docker_base_host_command_systemctl: "/usr/bin/env systemctl"
+sysd_docker_host_command: "/usr/bin/env docker"
+sysd_docker_host_sh: "/usr/bin/env sh"
+sysd_docker_systemctl: "/usr/bin/env systemctl"
 
 # Controls whether to enable IPv6 for all Docker container networks used by the various services.
 #
@@ -18,12 +18,12 @@ devture_systemd_docker_base_host_command_systemctl: "/usr/bin/env systemctl"
 #
 # The default value for this variable is still `false` to match the Docker default for creating new networks.
 #
-# Changing `devture_systemd_docker_base_ipv6_enabled` subsequently will NOT adjust existing container networks.
-# When changing `devture_systemd_docker_base_ipv6_enabled`, consider:
+# Changing `sysd_docker_ipv6_enabled` subsequently will NOT adjust existing container networks.
+# When changing `sysd_docker_ipv6_enabled`, consider:
 # - stopping all services (`just stop-all`)
 # - deleting all container networks on the server: `docker network rm $(docker network ls -q)`
 # - re-running the playbook fully: `just install-all`
-devture_systemd_docker_base_ipv6_enabled: false
+sysd_docker_ipv6_enabled: false
 
 # Controls whether to enable IPv6 in the Docker daemon options.
 #
@@ -38,35 +38,35 @@ devture_systemd_docker_base_ipv6_enabled: false
 #   experimental: true
 #   ip6tables: true
 #
-# Also see: `devture_systemd_docker_base_ipv6_enabled`
-devture_systemd_docker_base_ipv6_daemon_options_changing_enabled: false
+# Also see: `sysd_docker_ipv6_enabled`
+sysd_docker_ipv6_daemon_options_changing_enabled: false
 
 # Controls the driver options used when creating/updating container networks.
 #
 # Changing these settings subsequently correctly adjusts existing container networks.
-devture_systemd_docker_base_container_networks_driver_options: "{{ devture_systemd_docker_base_container_networks_driver_options_auto | combine(devture_systemd_docker_base_container_networks_driver_options_custom, recursive=True) }}"
-devture_systemd_docker_base_container_networks_driver_options_auto: {}
-devture_systemd_docker_base_container_networks_driver_options_custom: {}
+sysd_docker_net_driver_opts: "{{ sysd_docker_net_driver_opts_auto | combine(sysd_docker_net_driver_opts_custom, recursive=True) }}"
+sysd_docker_net_driver_opts_auto: {}
+sysd_docker_net_driver_opts_custom: {}
 
 # The name of the Docker service that other services will depend on.
 # You can use an empty string to remove this dependency.
-devture_systemd_docker_base_docker_service_name: docker.service
+sysd_docker_service: docker.service
 
 # Specifies how various roles will interact with the container system when it comes to pulling images, creating networks, etc.
 # Valid options: ansible-module, command
-devture_systemd_docker_base_container_system_interaction_method: ansible-module
+sysd_docker_system_interaction_method: ansible-module
 
 # Specifies how various roles will pull the image.
 # Valid options: ansible-module, command
-devture_systemd_docker_base_container_image_pull_method: "{{ devture_systemd_docker_base_container_system_interaction_method }}"
+sysd_docker_image_pull_method: "{{ sysd_docker_system_interaction_method }}"
 
 # Specifies how various roles will create container networks.
 # Valid options: ansible-module, command
-devture_systemd_docker_base_container_network_creation_method: "{{ devture_systemd_docker_base_container_system_interaction_method }}"
+sysd_docker_net_creation_method: "{{ sysd_docker_system_interaction_method }}"
 
 # Specifies how long to give to the container stopping process (docker stop --time=X CONTAINER) to run gracefully, before killing the container.
 # We use a relatively short interval here, because:
 # - certain services ignore SIGTERM and we don't wish to be stuck waiting for long
 # - certain services (HTTP servers) may wish to wait for long-polling connections to end and they may not be ending as quickly as we wish
 # A few seconds of grace time should be enough for everyone.
-devture_systemd_docker_base_container_stop_grace_time_seconds: 3
+sysd_docker_stop_grace: 3
